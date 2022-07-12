@@ -1,0 +1,41 @@
+---
+- name: sample1
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Deploy latest version of Prometheus chart inside monitoring namespace (and create it)
+      kubernetes.core.helm:
+        name: pro
+        chart_ref: stable/prometheus
+        release_namespace: monitoring
+        values_files:
+          - /home/ubuntu/ansible/prometheus.yaml
+        create_namespace: true
+
+- name: sample2
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Deploy Grafana chart using values files on target
+      kubernetes.core.helm:
+        name: gra
+        chart_ref: stable/grafana
+        release_namespace: monitoring
+        values_files:
+          - /home/ubuntu/ansible/grafana.yaml
+
+- name: sample3
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Add stable chart repo
+      kubernetes.core.helm_repository:
+        name: argo
+        repo_url: "https://argoproj.github.io/argo-helm"
+    - name: Deploy argo test
+      kubernetes.core.helm:
+        name: argo
+        chart_ref: argo/argo-cd
+        release_namespace: argo
+        create_namespace: true
+---
